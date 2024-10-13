@@ -13,28 +13,67 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Post {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  title     String   @db.VarChar(255)
-  content   String?
-  published Boolean  @default(false)
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  Int
+
+model Review {
+  id                Int       @id @default(autoincrement())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  content           String?   // Optional review content or feedback
+  rating            Int       // Rating (e.g., 1-5 stars)
+  author            User      @relation("AuthorReviews", fields: [authorId], references: [id])
+  authorId          Int
+  reviewedUser      User      @relation("ReceivedUserReviews",fields: [reviewedUserId], references: [id])
+  reviewedUserId    Int
+  ride              Ride      @relation(fields: [rideId], references: [id])
+  rideId            Int
 }
 
 model Profile {
-  id     Int     @id @default(autoincrement())
-  bio    String?
-  user   User    @relation(fields: [userId], references: [id])
-  userId Int     @unique
+  id                Int             @id @default(autoincrement())
+  bio               String?
+  user              User            @relation(fields: [userId], references: [id])
+  userId            Int             @unique
+  avatarUrl         String?         //Storing the image as a URL and using Amazon S3 to store image file
 }
 
 model User {
-  id      Int      @id @default(autoincrement())
-  email   String   @unique
-  name    String?
-  posts   Post[]
-  profile Profile?
+  id                Int             @id @default(autoincrement())
+  email             String          @unique
+  name              String?
+  password          String          //Hashed Password with JWT token
+  authoredReviews   Review[]        @relation("AuthorReviews")
+  receivedReviews   Review[]        @relation("ReceivedUserReviews")
+  role              Role            @default(PASSENGER)
+  rides             Ride[]
+  passengers        Passenger[]
+  profile           Profile?
+}
+
+model Ride {
+  id                Int             @id @default(autoincrement())
+  driver            User            @relation(fields: [driverId], references: [id])
+  driverId          Int
+  locationStart     String
+  locationEnd       String
+  driverNotes       String
+  date              DateTime
+  time              DateTime
+  review            Review[]
+  reviewId          Int
+  isComplete        Boolean         @default(false)
+  passengers        Passenger[]
+} 
+
+model Passenger {
+  id                Int             @id @default(autoincrement())
+  user              User            @relation(fields: [userId], references: [id])
+  userId            Int
+  ride              Ride            @relation(fields: [rideId], references: [id])
+  rideId            Int
+
+}
+
+enum Role {
+  RIDER
+  PASSENGER
 }
