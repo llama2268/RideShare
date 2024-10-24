@@ -33,7 +33,7 @@ model Profile {
   bio               String?
   user              User            @relation(fields: [userId], references: [id])
   userId            Int             @unique
-  avatarUrl         String?         //Storing the image as a URL and using Amazon S3 to store image file
+  avatarUrl         String?         //Storing the local file path for the image
 }
 
 model User {
