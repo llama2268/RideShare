@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client';
-import { Request, Response, NextFunction } from "express";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
@@ -42,7 +41,8 @@ export const login = async(user:{ name: string, email: string, password:string})
     
   }
   const token = jwt.sign({id:found_user.id, email:found_user.email,name:found_user.name,
-    password:found_user.password,role:found_user.role},JWT_SECRET)
+    password:found_user.password,role:found_user.role},JWT_SECRET,
+  {expiresIn: '24h'})
   
   return {user: {id: found_user.id, email: found_user.email, name:found_user.name,
     password:found_user.password,role:found_user.role},token}

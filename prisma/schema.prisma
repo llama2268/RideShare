@@ -59,7 +59,7 @@ model Ride {
   date              DateTime
   time              DateTime
   review            Review[]
-  reviewId          Int
+  reviewId          Int             @unique @default(autoincrement())
   isComplete        Boolean         @default(false)
   passengers        Passenger[]
 } 

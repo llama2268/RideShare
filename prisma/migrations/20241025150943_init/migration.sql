@@ -1,25 +1,5 @@
-/*
-  Warnings:
-
-  - You are about to drop the `Post` table. If the table is not empty, all the data it contains will be lost.
-  - Added the required column `password` to the `User` table without a default value. This is not possible if the table is not empty.
-
-*/
 -- CreateEnum
 CREATE TYPE "Role" AS ENUM ('RIDER', 'PASSENGER');
-
--- DropForeignKey
-ALTER TABLE "Post" DROP CONSTRAINT "Post_authorId_fkey";
-
--- AlterTable
-ALTER TABLE "Profile" ADD COLUMN     "avatarUrl" TEXT;
-
--- AlterTable
-ALTER TABLE "User" ADD COLUMN     "password" TEXT NOT NULL,
-ADD COLUMN     "role" "Role" NOT NULL DEFAULT 'PASSENGER';
-
--- DropTable
-DROP TABLE "Post";
 
 -- CreateTable
 CREATE TABLE "Review" (
@@ -36,6 +16,27 @@ CREATE TABLE "Review" (
 );
 
 -- CreateTable
+CREATE TABLE "Profile" (
+    "id" SERIAL NOT NULL,
+    "bio" TEXT,
+    "userId" INTEGER NOT NULL,
+    "avatarUrl" TEXT,
+
+    CONSTRAINT "Profile_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "User" (
+    "id" SERIAL NOT NULL,
+    "email" TEXT NOT NULL,
+    "name" TEXT,
+    "password" TEXT NOT NULL,
+    "role" "Role" NOT NULL DEFAULT 'PASSENGER',
+
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Ride" (
     "id" SERIAL NOT NULL,
     "driverId" INTEGER NOT NULL,
@@ -44,7 +45,7 @@ CREATE TABLE "Ride" (
     "driverNotes" TEXT NOT NULL,
     "date" TIMESTAMP(3) NOT NULL,
     "time" TIMESTAMP(3) NOT NULL,
-    "reviewId" INTEGER NOT NULL,
+    "reviewId" SERIAL NOT NULL,
     "isComplete" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Ride_pkey" PRIMARY KEY ("id")
@@ -59,6 +60,15 @@ CREATE TABLE "Passenger" (
     CONSTRAINT "Passenger_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateIndex
+CREATE UNIQUE INDEX "Profile_userId_key" ON "Profile"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Ride_reviewId_key" ON "Ride"("reviewId");
+
 -- AddForeignKey
 ALTER TABLE "Review" ADD CONSTRAINT "Review_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -67,6 +77,9 @@ ALTER TABLE "Review" ADD CONSTRAINT "Review_reviewedUserId_fkey" FOREIGN KEY ("r
 
 -- AddForeignKey
 ALTER TABLE "Review" ADD CONSTRAINT "Review_rideId_fkey" FOREIGN KEY ("rideId") REFERENCES "Ride"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Profile" ADD CONSTRAINT "Profile_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Ride" ADD CONSTRAINT "Ride_driverId_fkey" FOREIGN KEY ("driverId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
