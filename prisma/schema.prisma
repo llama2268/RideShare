@@ -47,6 +47,7 @@ model User {
   rides             Ride[]
   passengers        Passenger[]
   profile           Profile?
+  refreshToken      RefreshToken[]
 }
 
 model Ride {
@@ -71,6 +72,13 @@ model Passenger {
   ride              Ride            @relation(fields: [rideId], references: [id])
   rideId            Int
 
+}
+
+model RefreshToken {
+  token     String                  @id
+  userId    Int
+  user      User                    @relation(fields: [userId], references: [id])
+  createdAt DateTime                @default(now())
 }
 
 enum Role {

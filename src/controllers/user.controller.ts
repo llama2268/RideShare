@@ -19,3 +19,22 @@ export const registerOne = async (req: Request, res: Response) => {
     res.status(500).send(getErrorMessage(error));
   }
 };
+
+export const refreshToken = async (req:Request, res:Response) => {
+  const { refreshToken } = req.body;
+
+  if (!refreshToken) {
+    res.status(400).json({ message: "Refresh token is required" });
+  }
+  try {
+    const result = await userServices.refresh_access_token(refreshToken);
+
+    if (result.accessToken) {
+      res.status(200).json(result);
+    } else {
+      res.status(403).json({ message: "Invalid or expired refresh token" });
+    }
+  } catch (error) {
+    res.status(500).send(getErrorMessage(error));
+  }
+}

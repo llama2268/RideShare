@@ -112,3 +112,61 @@ export const deleteRide = async(req: Request, res: Response) => {
         res.status(500).json({message: getErrorMessage})
     }
 }
+
+export const removePassengerFromRide = async(req: Request, res: Response) => {
+    const {rideId} = req.params
+    const {userId} = req.body
+
+    if (!rideId || userId){
+        res.status(400).json({message:"rideId and userId not found"})
+    }
+
+    try{
+        const passenger = await prisma.passenger.findFirst({where:{
+            rideId: parseInt(rideId),
+            userId: userId
+        }
+        })
+        if (!passenger){
+            res.status(404).json({message: "Passenger was not found"})
+        } else{
+
+        await prisma.passenger.delete({
+            where:{
+                id: passenger.id
+            }
+        })
+        res.status(200).json({message:"Passenger was removed successfully"})
+    }
+    }catch (error){
+        throw new Error("Passenger was not removed successfully")
+    }
+}
+
+export const findRides = async(req: Request, res: Response) => {
+    const {startTime, origin, destination} = req.query
+    try {
+        const filters: any = {}
+        if (startTime) {
+            filters.time = new Date(startTime as string)
+        }
+        if (origin) {
+            filters.locationStart = origin
+        }
+        if (destination){
+            filters.locationEnd = destination
+        }
+        const rides = await prisma.ride.findMany({
+            where:filters,
+            include: {driver: true,
+                passengers: true
+            }     
+        })
+        if (rides.length == 0){
+            res.status(404).json({message: "No rides found matching criteria"})
+        }
+        res.status(200).json(rides)
+    }catch (error) {
+        res.status(500).send(getErrorMessage)
+    }
+}
