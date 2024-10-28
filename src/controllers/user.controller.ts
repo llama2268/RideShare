@@ -38,3 +38,19 @@ export const refreshToken = async (req:Request, res:Response) => {
     res.status(500).send(getErrorMessage(error));
   }
 }
+
+export const logOut = async (req: Request, res: Response) => {
+  const {refreshToken} = req.body
+  if (!refreshToken) {
+    res.status(400).json({message:"Refresh token is required, failed to acquire token"})
+  }
+  try {
+    const result = await userServices.userLogout(refreshToken)
+      if (result){
+        res.status(200).json({message:"Successfully logged out user"})
+      }
+    
+  }catch(error){
+    res.status(500).send(getErrorMessage(error))
+  }
+}

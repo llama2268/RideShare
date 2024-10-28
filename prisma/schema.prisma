@@ -44,8 +44,8 @@ model User {
   authoredReviews   Review[]        @relation("AuthorReviews")
   receivedReviews   Review[]        @relation("ReceivedUserReviews")
   role              Role            @default(PASSENGER)
-  rides             Ride[]
-  passengers        Passenger[]
+  ridesOffered      Ride[]
+  passengersForRide Passenger[]
   profile           Profile?
   refreshToken      RefreshToken[]
 }
@@ -57,8 +57,8 @@ model Ride {
   locationStart     String
   locationEnd       String
   driverNotes       String
-  date              DateTime
-  time              DateTime
+  date              String
+  time              String
   review            Review[]
   reviewId          Int             @unique @default(autoincrement())
   isComplete        Boolean         @default(false)
@@ -84,4 +84,5 @@ model RefreshToken {
 enum Role {
   RIDER
   PASSENGER
+  RIDER_AND_PASSENGER
 }

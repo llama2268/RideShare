@@ -6,10 +6,11 @@ import { auth } from '../middleware/auth';
 
 const router = Router();
 
-router.post('/user/login', auth, userController.loginOne);
-router.post('/user/register', auth, userController.registerOne);
-router.post('/user/login/refresh_token', auth, userController.refreshToken)
-router.post('/user/find_rides/', auth, riderController.findRides)
+router.post('/user/login', userController.loginOne);
+router.delete('/user/logout',auth, userController.logOut);
+router.post('/user/register', userController.registerOne);
+router.post('/user/login/refresh_token', userController.refreshToken)
+router.get('/user/find_rides/', auth, riderController.findRides)
 
 
 

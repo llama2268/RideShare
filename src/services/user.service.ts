@@ -1,8 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { getErrorMessage } from '../utils/errors.util';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 const salt_rounds = 10
 const JWT_SECRET = process.env.JWT_SECRET as string;
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET as string;
@@ -57,8 +58,9 @@ export const login = async(user:{id:number, name: string, email: string, passwor
 
   if (storedrefreshToken && !isTokenExpired(storedrefreshToken.token)) {
     refreshToken = storedrefreshToken.token;
+    return refreshToken + " :User is logged in already"
   } else {
-    refreshToken = jwt.sign({ id: user.id }, REFRESH_TOKEN_SECRET, { expiresIn: '24h' });
+    refreshToken = jwt.sign({ id: found_user.id }, REFRESH_TOKEN_SECRET, { expiresIn: '24h' });
   }
   await prisma.refreshToken.create({
     data: {
@@ -103,4 +105,17 @@ export const refresh_access_token = async(refreshToken: string) => {
   }catch(error){
     throw new Error("Failed to refresh access token")
 }
+}
+
+export const userLogout = async(refreshToken: string) => {
+  try {
+    const deletedToken = await prisma.refreshToken.deleteMany({
+      where: {token: refreshToken}
+    })
+    if (deletedToken.count == 0){
+      return new Error("Refresh token not found")
+    }
+  }catch(error){
+    throw new Error("Failed to log out user")
+  }
 }
