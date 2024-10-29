@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"  # Maps the app port to the host
+      - "5432:5432"  # Maps the PostgreSQL port to the host (optional)
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@localhost:5432/mydatabase
