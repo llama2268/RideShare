@@ -16,6 +16,9 @@ app.use(bodyParser.json()); // Middleware for parsing JSON requests
 app.use('/api/rider', riderRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/review', reviewRoutes);
+app.get('/health', (req, res) => {
+  res.status(200).send("OK")
+})
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
