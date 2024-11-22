@@ -13,37 +13,37 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model Review {
-  id                Int       @id @default(autoincrement())
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  content           String?   // Optional review content or feedback
-  rating            Int       // Rating (e.g., 1-5 stars)
-  author            User      @relation("AuthorReviews", fields: [authorId], references: [id])
-  authorId          Int
-  reviewedUser      User      @relation("ReceivedUserReviews",fields: [reviewedUserId], references: [id])
-  reviewedUserId    Int
-  ride              Ride      @relation(fields: [rideId], references: [id])
-  rideId            Int
+  id             Int      @id @default(autoincrement())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  content        String? // Optional review content or feedback
+  rating         Int // Rating (e.g., 1-5 stars)
+  author         User     @relation("AuthorReviews", fields: [authorId], references: [id])
+  authorId       Int
+  reviewedUser   User     @relation("ReceivedUserReviews", fields: [reviewedUserId], references: [id])
+  reviewedUserId Int
+  ride           Ride     @relation(fields: [rideId], references: [id])
+  rideId         Int
 }
 
 model Profile {
-  id                Int             @id @default(autoincrement())
-  bio               String?
-  user              User            @relation(fields: [userId], references: [id])
-  userId            Int             @unique
-  avatarUrl         String?         //Storing the local file path for the image
+  id        Int     @id @default(autoincrement())
+  bio       String?
+  user      User    @relation(fields: [userId], references: [id])
+  userId    Int     @unique
+  avatarUrl String? //Storing the local file path for the image
 }
 
 model User {
-  id                Int             @id @default(autoincrement())
-  email             String          @unique
+  id                Int            @id @default(autoincrement())
+  email             String         @unique
   name              String?
-  password          String          //Hashed Password with JWT token
-  authoredReviews   Review[]        @relation("AuthorReviews")
-  receivedReviews   Review[]        @relation("ReceivedUserReviews")
-  role              Role            @default(PASSENGER)
+  clerkUserId       String         @unique
+  password          String //Hashed Password with JWT token
+  authoredReviews   Review[]       @relation("AuthorReviews")
+  receivedReviews   Review[]       @relation("ReceivedUserReviews")
+  role              Role           @default(PASSENGER)
   ridesOffered      Ride[]
   passengersForRide Passenger[]
   profile           Profile?
@@ -51,34 +51,36 @@ model User {
 }
 
 model Ride {
-  id                Int             @id @default(autoincrement())
-  driver            User            @relation(fields: [driverId], references: [id])
-  driverId          Int
-  locationStart     String
-  locationEnd       String
-  driverNotes       String
-  date              String
-  time              String
-  review            Review[]
-  reviewId          Int             @unique @default(autoincrement())
-  isComplete        Boolean         @default(false)
-  passengers        Passenger[]
-} 
+  id            Int         @id @default(autoincrement())
+  driver        User        @relation(fields: [driverId], references: [id])
+  driverId      Int
+  locationStart String
+  locationEnd   String
+  driverNotes   String
+  date          String
+  time          String
+  carType       String
+  rate          Int
+  seats         Int
+  review        Review[]
+  reviewId      Int         @unique @default(autoincrement())
+  isComplete    Boolean     @default(false)
+  passengers    Passenger[] // Relation to Passenger model
+}
 
 model Passenger {
-  id                Int             @id @default(autoincrement())
-  user              User            @relation(fields: [userId], references: [id])
-  userId            Int
-  ride              Ride            @relation(fields: [rideId], references: [id])
-  rideId            Int
-
+  id     Int  @id @default(autoincrement())
+  userId Int
+  rideId Int
+  user   User @relation(fields: [userId], references: [id])
+  ride   Ride @relation(fields: [rideId], references: [id])
 }
 
 model RefreshToken {
-  token     String                  @id
+  token     String   @id
   userId    Int
-  user      User                    @relation(fields: [userId], references: [id])
-  createdAt DateTime                @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
 }
 
 enum Role {

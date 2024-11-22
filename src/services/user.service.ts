@@ -20,6 +20,7 @@ export const register = async(user: {name: string, email: string, password: stri
       data: {
         name: user.name,
         email: user.email,
+        clerkUserId: "",
         password: hashed_password
       }
     }

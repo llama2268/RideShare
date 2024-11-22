@@ -1,18 +1,16 @@
 import { Router } from 'express';
 import * as userController from '../controllers/user.controller';
 import * as riderController from '../controllers/rider.controller';
-import { auth } from '../middleware/auth';
-
+import {requireAuth} from "@clerk/express";
 
 const router = Router();
 
-router.post('/user/login', userController.loginOne);
-router.delete('/user/logout',auth, userController.logOut);
-router.post('/user/register', userController.registerOne);
-router.post('/user/login/refresh_token', userController.refreshToken)
-router.get('/user/find_rides/', auth, riderController.findRides)
-
-
+router.post('/login', userController.loginOne);
+router.delete('/logout',requireAuth(), userController.logOut);
+router.post('/register', userController.registerOne);
+router.post('/login/refresh_token', userController.refreshToken)
+router.get('/find_rides/', requireAuth(), riderController.findRides)
+router.get('/driver_rides/', requireAuth(), riderController.getRides)
 
 
 export default router;
