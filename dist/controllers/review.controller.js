@@ -13,18 +13,6 @@ exports.deleteReview = exports.updateReview = exports.createReview = void 0;
 const errors_util_1 = require("../utils/errors.util");
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
-/*model Review {
-    id                Int       @id @default(autoincrement())
-    createdAt         DateTime  @default(now())
-    updatedAt         DateTime  @updatedAt
-    content           String?   // Optional review content or feedback
-    rating            Int       // Rating (e.g., 1-5 stars)
-    author            User      @relation("AuthorReviews", fields: [authorId], references: [id])
-    authorId          Int
-    reviewedUser      User      @relation("ReceivedUserReviews",fields: [reviewedUserId], references: [id])
-    reviewedUserId    Int
-    ride              Ride      @relation(fields: [rideId], references: [id])
-    rideId            Int*/
 const createReview = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { content, rating, authorId, reviewedUserId, rideId } = req.body;
     try {

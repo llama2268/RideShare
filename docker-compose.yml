@@ -8,3 +8,6 @@ services:
       - "5432:5432"  # Maps the PostgreSQL port to the host (optional)
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@localhost:5432/mydatabase
+    volumes:
+      - .:/usr/src/app  # Binds the entire root directory to /usr/src/app in the container
+      - /usr/src/app/node_modules  # Keeps node_modules container-specific
